@@ -67,6 +67,11 @@ class _RandomWordsState extends State<RandomWords> {
     return Scaffold(
       // NEW from here ...
       appBar: AppBar(
+        leading: const IconButton(
+          icon: Icon(Icons.menu, color: Colors.white,),
+          tooltip: 'Navigation menu',
+          onPressed: null,
+        ),
         title: const Text('Startup Name Generator'),
         actions: [
           IconButton(
@@ -123,6 +128,11 @@ class _RandomWordsState extends State<RandomWords> {
             // },
           );
         },
+      ),
+      floatingActionButton: const FloatingActionButton(
+        tooltip: 'Add', // used by assistive technologies
+        onPressed: null,
+        child: Icon(Icons.add),
       ),
     );
   }
