@@ -8,9 +8,7 @@ void main() {
   runApp(
     const MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: MyButton(),
-        ),
+        body: SimpStuff()
       ),
     ),
   );
@@ -34,7 +32,7 @@ class _SimpStuffState extends State<SimpStuff> {
           Icon(Icons.navigate_next),
         ],
       ),
-      body: const Text('This is crazy man'),
+      body: const Center (child: MyButton()),
     );
   }
 }
