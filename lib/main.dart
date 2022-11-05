@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -20,6 +20,7 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
+  List data_points = [];
   double offsetX = 0.0;
   double offsetY = 0.0;
 
@@ -66,7 +67,7 @@ class _MapViewState extends State<MapView> {
                   scale: 4.5,
                   child: ClipRect(
                     child: Image.asset(
-                      'assets/bird.jpg',
+                      'assets/map.png',
                     ),
                   ))),
           GestureDetector(
@@ -81,7 +82,7 @@ class _MapViewState extends State<MapView> {
               },
               child: Container(
                 decoration: const BoxDecoration(color: Colors.white),
-                height: 80,
+                height: 120,
                 child: Column(
                   children: [
                     Container(
@@ -95,10 +96,20 @@ class _MapViewState extends State<MapView> {
                     ),
                     Text(
                       'offset Y = $offsetY',
-                    )
+                    ),
+                    ElevatedButton(onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: data_points.toString()));
+                    }, child: const Text('copy to clipboard!'))
                   ],
                 ),
               ))
-        ]));
+        ]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            data_points.add([offsetX, offsetY]);
+            
+          },
+          child: const Icon(Icons.navigation),
+        ));
   }
 }
