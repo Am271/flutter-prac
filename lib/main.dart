@@ -34,6 +34,7 @@ class Counter extends StatefulWidget {
 
 class _CounterState extends State<Counter> {
   int _counter = 0;
+  double velocity = 0.0;
 
   void _increment() {
     setState(() {
@@ -41,16 +42,48 @@ class _CounterState extends State<Counter> {
     });
   }
 
+  void _updateVel(velocity_) {
+    setState(() {
+      velocity = velocity_;
+      if(velocity < 0) { // Swipe left
+        --_counter;
+      } else { // Swipe right
+        ++_counter;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CounterIncrementor(onPressed: _increment),
-        const SizedBox(width: 16),
-        CounterDisplay(count: _counter),
-      ],
-    );
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          CounterIncrementor(onPressed: _increment),
+          const SizedBox(width: 16),
+          CounterDisplay(count: _counter),
+        ],
+      ),
+      GestureDetector(
+          onHorizontalDragEnd: ((details) {
+            _updateVel(details.primaryVelocity);
+          }),
+          child: Container(
+            decoration: const BoxDecoration(color: Colors.blue),
+            height: 60,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: const Center(
+                child: Text('Swipe to Increment / Decrement',
+                    style: TextStyle(color: Colors.white))),
+          )),
+      Container(
+        height: 30.0,
+      ),
+      Center(
+          child: Text(
+        'Speed: $velocity',
+      ))
+    ]);
   }
 }
 
