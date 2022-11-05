@@ -1,98 +1,69 @@
 import 'package:flutter/material.dart';
 
-class CounterDisplay extends StatelessWidget {
-  const CounterDisplay({required this.count, super.key});
+class Product {
+  const Product({required this.name});
 
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('Count: $count');
-  }
+  final String name;
 }
 
-class CounterIncrementor extends StatelessWidget {
-  const CounterIncrementor({required this.onPressed, super.key});
+typedef CartChangedCallback = Function(Product product, bool inCart);
 
-  final VoidCallback onPressed;
+class ShoppingListItem extends StatelessWidget {
+  ShoppingListItem({
+    required this.product,
+    required this.inCart,
+    required this.onCartChanged,
+  }) : super(key: ObjectKey(product));
 
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: const Text('Increment'),
+  final Product product;
+  final bool inCart;
+  final CartChangedCallback onCartChanged;
+
+  Color _getColor(BuildContext context) {
+    // The theme depends on the BuildContext because different
+    // parts of the tree can have different themes.
+    // The BuildContext indicates where the build is
+    // taking place and therefore which theme to use.
+
+    return inCart //
+        ? Colors.black54
+        : Theme.of(context).primaryColor;
+  }
+
+  TextStyle? _getTextStyle(BuildContext context) {
+    if (!inCart) return null;
+
+    return const TextStyle(
+      color: Colors.black54,
+      decoration: TextDecoration.lineThrough,
     );
   }
-}
-
-class Counter extends StatefulWidget {
-  const Counter({super.key});
-
-  @override
-  State<Counter> createState() => _CounterState();
-}
-
-class _CounterState extends State<Counter> {
-  int _counter = 0;
-  double velocity = 0.0;
-
-  void _increment() {
-    setState(() {
-      ++_counter;
-    });
-  }
-
-  void _updateVel(velocity_) {
-    setState(() {
-      velocity = velocity_;
-      if(velocity < 0) { // Swipe left
-        --_counter;
-      } else { // Swipe right
-        ++_counter;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          CounterIncrementor(onPressed: _increment),
-          const SizedBox(width: 16),
-          CounterDisplay(count: _counter),
-        ],
+    return ListTile(
+      onTap: () {
+        onCartChanged(product, inCart);
+      },
+      leading: CircleAvatar(
+        backgroundColor: _getColor(context),
+        child: Text(product.name[0]),
       ),
-      GestureDetector(
-          onHorizontalDragEnd: ((details) {
-            _updateVel(details.primaryVelocity);
-          }),
-          child: Container(
-            decoration: const BoxDecoration(color: Colors.blue),
-            height: 60,
-            margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: const Center(
-                child: Text('Swipe to Increment / Decrement',
-                    style: TextStyle(color: Colors.white))),
-          )),
-      Container(
-        height: 30.0,
-      ),
-      Center(
-          child: Text(
-        'Speed: $velocity',
-      ))
-    ]);
+      title: Text(product.name, style: _getTextStyle(context)),
+    );
   }
 }
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Counter(),
+          child: ShoppingListItem(
+            product: const Product(name: 'Chips'),
+            inCart: true,
+            onCartChanged: (product, inCart) {},
+          ),
         ),
       ),
     ),
