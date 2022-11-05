@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Counter(),
-        ),
-      ),
+      home: Counter(),
     ),
   );
 }
@@ -49,16 +45,19 @@ class _CounterState extends State<Counter> {
     // rerunning build methods fast, so that you can just
     // rebuild anything that needs updating rather than
     // having to individually changes instances of widgets.
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ElevatedButton(
-          onPressed: _increment,
-          child: const Text('Increment'),
-        ),
-        const SizedBox(width: 16),
-        Text('Count: $_counter'),
-      ],
-    );
+    return Scaffold(
+        appBar: AppBar(title: const Text('Hello there')),
+        body: Center(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: _increment,
+              child: const Text('Increment'),
+            ),
+            const SizedBox(width: 16),
+            Text('Count: $_counter'),
+          ],
+        )));
   }
 }
