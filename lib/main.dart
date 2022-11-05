@@ -67,7 +67,7 @@ class _MapViewState extends State<MapView> {
                   scale: 4.5,
                   child: ClipRect(
                     child: Image.asset(
-                      'assets/map.png',
+                      'assets/map_.png',
                     ),
                   ))),
           GestureDetector(
