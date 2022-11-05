@@ -1,63 +1,64 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(
     const MaterialApp(
       home: Scaffold(
-        body: SimpStuff()
+        body: Center(
+          child: Counter(),
+        ),
       ),
     ),
   );
 }
 
-class SimpStuff extends StatefulWidget {
-  const SimpStuff({super.key});
+class Counter extends StatefulWidget {
+  // This class is the configuration for the state.
+  // It holds the values (in this case nothing) provided
+  // by the parent and used by the build  method of the
+  // State. Fields in a Widget subclass are always marked
+  // "final".
+
+  const Counter({super.key});
 
   @override
-  State<SimpStuff> createState() => _SimpStuffState();
+  State<Counter> createState() => _CounterState();
 }
 
-class _SimpStuffState extends State<SimpStuff> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const Icon(Icons.headphones, color: Colors.amber,),
-        title: const Text('How are you'),
-        actions: const [
-          Icon(Icons.navigate_next),
-        ],
-      ),
-      body: const Center (child: MyButton()),
-    );
+class _CounterState extends State<Counter> {
+  int _counter = 0;
+
+  void _increment() {
+    setState(() {
+      // This call to setState tells the Flutter framework
+      // that something has changed in this State, which
+      // causes it to rerun the build method below so that
+      // the display can reflect the updated values. If you
+      // change _counter without calling setState(), then
+      // the build method won't be called again, and so
+      // nothing would appear to happen.
+      _counter++;
+    });
   }
-}
-
-class MyButton extends StatelessWidget {
-  const MyButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        int a = 1;
-      },
-      child: Container(
-        height: 50.0,
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.symmetric(horizontal: 15.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.lightGreen[500],
+    // This method is rerun every time setState is called,
+    // for instance, as done by the _increment method above.
+    // The Flutter framework has been optimized to make
+    // rerunning build methods fast, so that you can just
+    // rebuild anything that needs updating rather than
+    // having to individually changes instances of widgets.
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ElevatedButton(
+          onPressed: _increment,
+          child: const Text('Increment'),
         ),
-        child: const Center(
-          child: Text('Engage', style: TextStyle(color: Colors.white),),
-        ),
-      ),
+        const SizedBox(width: 16),
+        Text('Count: $_counter'),
+      ],
     );
   }
 }
