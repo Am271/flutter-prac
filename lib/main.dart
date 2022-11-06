@@ -52,7 +52,7 @@ class _ExMapState extends State<ExMap> {
     });
   }
 
-  List markers_list = [];
+  List<LatLng> markers_list = [];
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +83,9 @@ class _ExMapState extends State<ExMap> {
                 userAgentPackageName: 'com.example.app',
               ),
               MarkerLayer(markers: _getMarkers()),
+              PolylineLayer(
+                polylines: [Polyline(points: markers_list, strokeWidth: 6.0)],
+              )
             ],
           ),
           // Container(child: Center(child: Text('Current tap $tap_pos_x, $tap_pos_y')),)
