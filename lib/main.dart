@@ -40,6 +40,18 @@ class _ExMapState extends State<ExMap> {
     return markers;
   }
 
+  void _cleaRMarkers() {
+    setState(() {
+      markers_list.clear();
+    });
+  }
+
+  void _clearLastMarker() {
+    setState(() {
+      markers_list.removeLast();
+    });
+  }
+
   List markers_list = [];
 
   @override
@@ -47,6 +59,10 @@ class _ExMapState extends State<ExMap> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map view'),
+        actions: [
+          IconButton(onPressed: _cleaRMarkers, icon: const Icon(Icons.delete, color: Colors.white,)),
+          IconButton(onPressed: _clearLastMarker, icon: const Icon(Icons.undo, color: Colors.white,))
+        ],
       ),
       body: Stack(
         children: [
