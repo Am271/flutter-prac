@@ -53,6 +53,7 @@ class _ExMapState extends State<ExMap> {
   }
 
   List<LatLng> markers_list = [];
+  List<LatLng> markers_list2 = [LatLng(12.920629, 77.651579), LatLng(12.917349, 77.651688), LatLng(12.912008, 77.651805), LatLng(12.911945, 77.649056), LatLng(12.910818, 77.649128), LatLng(12.909575, 77.64927), LatLng(12.9087, 77.649278), LatLng(12.909111, 77.644619), LatLng(12.908638, 77.644535), LatLng(12.904794, 77.644329), LatLng(12.905141, 77.642651), LatLng(12.906205, 77.642638), LatLng(12.906163, 77.641246), LatLng(12.90883, 77.641371), LatLng(12.908832, 77.641755)];
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +61,18 @@ class _ExMapState extends State<ExMap> {
       appBar: AppBar(
         title: const Text('Map view'),
         actions: [
-          IconButton(onPressed: _cleaRMarkers, icon: const Icon(Icons.delete, color: Colors.white,)),
-          IconButton(onPressed: _clearLastMarker, icon: const Icon(Icons.undo, color: Colors.white,))
+          IconButton(
+              onPressed: _cleaRMarkers,
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              )),
+          IconButton(
+              onPressed: _clearLastMarker,
+              icon: const Icon(
+                Icons.undo,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Stack(
@@ -70,6 +81,9 @@ class _ExMapState extends State<ExMap> {
             options: MapOptions(
               center: LatLng(12.924, 77.558),
               zoom: 18.0,
+              maxZoom: 18.0,
+              rotation: 180.0,
+              keepAlive: true,
               onTap: (tapPosition, point) {
                 setState(() {
                   markers_list.add(point);
@@ -84,7 +98,9 @@ class _ExMapState extends State<ExMap> {
               ),
               MarkerLayer(markers: _getMarkers()),
               PolylineLayer(
-                polylines: [Polyline(points: markers_list, strokeWidth: 6.0)],
+                polylines: [
+                  Polyline(points: markers_list2, strokeWidth: 6.0)
+                ],
               )
             ],
           ),
@@ -95,7 +111,10 @@ class _ExMapState extends State<ExMap> {
         onPressed: () async {
           await Clipboard.setData(ClipboardData(text: markers_list.toString()));
         },
-        child: const Icon(Icons.copy, color: Colors.white,),
+        child: const Icon(
+          Icons.copy,
+          color: Colors.white,
+        ),
       ),
     );
   }
