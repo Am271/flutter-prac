@@ -79,6 +79,11 @@ class _ExMapState extends State<ExMap> {
       });
       i++;
       if (i == x.length) {
+        i = 0;
+        ambulance_loc_index++;
+        x = _getMarkers();
+      }
+      if(ambulance_loc_index == markers_list2.length) {
         timer.cancel();
       }
     });
