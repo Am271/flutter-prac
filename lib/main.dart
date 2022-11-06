@@ -3,136 +3,80 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: ExMap(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ExMap extends StatefulWidget {
+  const ExMap({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Welcome to Flutter', home: RandomWords());
-  }
+  State<ExMap> createState() => _ExMapState();
 }
 
-class RandomWords extends StatefulWidget {
-  const RandomWords({super.key});
+class _ExMapState extends State<ExMap> {
+  List<Marker> _getMarkers() {
+    List<Marker> markers = [];
 
-  @override
-  State<RandomWords> createState() => _RandomWordsState();
-}
+    for (int i = 0; i < markers_list.length; i++) {
+      markers.add(Marker(
+        point: LatLng(markers_list[i].latitude, markers_list[i].longitude),
+        width: 80,
+        height: 80,
+        builder: (context) => const Icon(
+          Icons.location_pin,
+          size: 40,
+          color: Colors.red,
+        ),
+      ));
+    }
 
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _saved = <WordPair>{};
-  final _biggerFont = const TextStyle(fontSize: 18);
-
-  void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          final tiles = _saved.map(
-            (pair) {
-              return ListTile(
-                title: Text(
-                  pair.asPascalCase,
-                  style: _biggerFont,
-                ),
-              );
-            },
-          );
-          final divided = tiles.isNotEmpty
-              ? ListTile.divideTiles(
-                  context: context,
-                  tiles: tiles,
-                ).toList()
-              : <Widget>[];
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Saved Suggestions'),
-            ),
-            body: ListView(children: divided),
-          );
-        },
-      ),
-    );
+    return markers;
   }
+
+  List markers_list = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // NEW from here ...
       appBar: AppBar(
-        leading: const IconButton(
-          icon: Icon(Icons.menu, color: Colors.white,),
-          tooltip: 'Navigation menu',
-          onPressed: null,
-        ),
-        title: const Text('Startup Name Generator'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: _pushSaved,
-            tooltip: 'Saved Suggestions',
-          ),
-        ],
+        title: const Text('Map view'),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return const Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-
-          final alreadySaved = _saved.contains(_suggestions[index]);
-
-          return ListTile(
-            title: Text(
-              _suggestions[index].asPascalCase,
-              style: _biggerFont,
-            ),
-            trailing: IconButton(
-              // NEW from here ...
-              // alreadySaved ? Icons.favorite : Icons.favorite_border,
-              icon: alreadySaved
-                  ? const Icon(Icons.favorite)
-                  : const Icon(Icons.favorite_border),
-              color: alreadySaved ? Colors.red : Colors.blue,
-              onPressed: () {
+      body: Stack(
+        children: [
+          FlutterMap(
+            options: MapOptions(
+              center: LatLng(12.924, 77.558),
+              zoom: 18.0,
+              onTap: (tapPosition, point) {
                 setState(() {
-                  if (alreadySaved) {
-                    _saved.remove(_suggestions[index]);
-                  } else {
-                    _saved.add(_suggestions[index]);
-                  }
+                  markers_list.add(point);
                 });
               },
-              // semanticLabel: alreadySaved ? 'Remove from saved' : 'Save',
             ),
-            // onTap: () {
-            //   // NEW from here ...
-            //   setState(() {
-            //     if (alreadySaved) {
-            //       _saved.remove(_suggestions[index]);
-            //     } else {
-            //       _saved.add(_suggestions[index]);
-            //     }
-            //   }); // to here.
-            // },
-          );
-        },
+            children: [
+              TileLayer(
+                urlTemplate:
+                    'http://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                userAgentPackageName: 'com.example.app',
+              ),
+              MarkerLayer(markers: _getMarkers()),
+            ],
+          ),
+          // Container(child: Center(child: Text('Current tap $tap_pos_x, $tap_pos_y')),)
+        ],
       ),
-      floatingActionButton: const FloatingActionButton(
-        tooltip: 'Add', // used by assistive technologies
-        onPressed: null,
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Clipboard.setData(ClipboardData(text: markers_list.toString()));
+        },
+        child: const Icon(Icons.copy, color: Colors.white,),
       ),
     );
   }
