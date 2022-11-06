@@ -65,6 +65,7 @@ class _ExMapState extends State<ExMap> {
     });
   }
 
+  LatLng plot_center = LatLng(12.912111, 77.646641);
   List<LatLng> markers_list = [];
   List<LatLng> markers_list2 = [
     LatLng(12.920629, 77.651579),
@@ -204,8 +205,8 @@ class _ExMapState extends State<ExMap> {
         children: [
           FlutterMap(
             options: MapOptions(
-              center: markers_list2[0],
-              zoom: 18.0,
+              center: plot_center,
+              zoom: 15.3,
               maxZoom: 18.0,
               // rotation: 180.0,
               keepAlive: true,
