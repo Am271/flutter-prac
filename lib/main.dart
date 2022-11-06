@@ -73,7 +73,7 @@ class _ExMapState extends State<ExMap> {
     List<Marker> x = _getMarkers();
     int i = 0;
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         ambulance_marker = x[i];
       });
@@ -81,14 +81,13 @@ class _ExMapState extends State<ExMap> {
       if (i == x.length) {
         i = 0;
         ambulance_loc_index++;
+        x.clear();
         x = _getMarkers();
       }
       if(ambulance_loc_index == markers_list2.length) {
         timer.cancel();
       }
     });
-
-    ambulance_loc_index++;
   }
 
   List<Polyline> _getPolylines(markers_tp, marker_color) {
