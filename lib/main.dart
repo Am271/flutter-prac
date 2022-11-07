@@ -115,25 +115,26 @@ class _ExMapState extends State<ExMap> {
 
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
-        double angle = _getRotAng();
-        ang = angle;
+        // double angle = _getRotAng();
+        // ang = angle;
         ambulance_marker = x[i];
-        LatLng temp = LatLng(
-            ambulance_marker.point.latitude, ambulance_marker.point.longitude);
-        if (angle >= 0 && angle < 90) {
-          temp.latitude += 0.001247;
-        } else if (angle >= 90 && angle < 180) {
-          temp.longitude += 0.001247;
-        } else if (angle >= 180 && angle < 270) {
-          temp.latitude -= 0.001247;
-        } else if (angle >= 270 && angle < 360) {
-          temp.longitude -= 0.001247;
-        }
+        // LatLng temp = LatLng(
+        //     ambulance_marker.point.latitude, ambulance_marker.point.longitude);
+        // if (angle >= 0 && angle < 90) {
+        //   temp.latitude += 0.001247;
+        // } else if (angle >= 90 && angle < 180) {
+        //   temp.longitude += 0.001247;
+        // } else if (angle >= 180 && angle < 270) {
+        //   temp.latitude -= 0.001247;
+        // } else if (angle >= 270 && angle < 360) {
+        //   temp.longitude -= 0.001247;
+        // }
 
-        // temp.longitude -= 0.001247;
-        // temp.latitude -= 0.001247;
-        _mapController.moveAndRotate(temp, 18.0, angle);
+        // // temp.longitude -= 0.001247;
+        // // temp.latitude -= 0.001247;
+        _mapController.moveAndRotate(ambulance_marker.point, 18.0, _getRotAng());
         kms_left = _getDistance(ambulance_marker.point);
+        kms_left_str = kms_left.toStringAsFixed(2);
       });
       i++;
       if (i == x.length) {
@@ -146,6 +147,20 @@ class _ExMapState extends State<ExMap> {
         timer.cancel();
       }
     });
+  }
+
+  List<Marker> _getPotholes() {
+    List<Marker> ph = [];
+    for (int i = 0; i < potholes.length; i++) {
+      ph.add(Marker(
+          point: potholes[i],
+          builder: ((context) => const Icon(
+                Icons.circle,
+                color: Colors.brown,
+                size: 10,
+              ))));
+    }
+    return ph;
   }
 
   List<Polyline> _getPolylines(markers_tp, marker_color) {
@@ -178,6 +193,7 @@ class _ExMapState extends State<ExMap> {
   int ambulance_loc_index = 0;
   double ang = 0.0;
   double kms_left = 0;
+  String kms_left_str ='';
   Marker ambulance_marker = Marker(
       point: LatLng(0.0, 0.0),
       builder: ((context) => const Icon(
@@ -262,6 +278,8 @@ class _ExMapState extends State<ExMap> {
     LatLng(12.908856, 77.641741)
   ];
 
+  List<LatLng> potholes = [];
+
   List<LatLng> orange_markers = [
     LatLng(12.91899, 77.651639),
     LatLng(12.918589, 77.651674),
@@ -315,26 +333,26 @@ class _ExMapState extends State<ExMap> {
       appBar: AppBar(
         title: const Text('Map view'),
         actions: [
-          IconButton(
-              onPressed: () {
-                markers_list.add(_mapController.center);
-              },
-              icon: const Icon(
-                Icons.pin,
-                color: Colors.white,
-              )),
-          IconButton(
-              onPressed: _cleaRMarkers,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              )),
-          IconButton(
-              onPressed: _clearLastMarker,
-              icon: const Icon(
-                Icons.undo,
-                color: Colors.white,
-              )),
+          // IconButton(
+          //     onPressed: () {
+          //       markers_list.add(_mapController.center);
+          //     },
+          //     icon: const Icon(
+          //       Icons.pin,
+          //       color: Colors.white,
+          //     )),
+          // IconButton(
+          //     onPressed: _cleaRMarkers,
+          //     icon: const Icon(
+          //       Icons.delete,
+          //       color: Colors.white,
+          //     )),
+          // IconButton(
+          //     onPressed: _clearLastMarker,
+          //     icon: const Icon(
+          //       Icons.undo,
+          //       color: Colors.white,
+          //     )),
           IconButton(
             onPressed: (() {
               setState(() {
@@ -395,6 +413,7 @@ class _ExMapState extends State<ExMap> {
                           )),
                 ],
               ),
+              MarkerLayer(markers: _getPotholes()),
               MarkerLayer(markers: [ambulance_marker]),
             ],
           ),
@@ -402,7 +421,7 @@ class _ExMapState extends State<ExMap> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                height: 150,
+                height: 100,
                 decoration: const BoxDecoration(color: Colors.white),
               ),
             ],
@@ -413,14 +432,14 @@ class _ExMapState extends State<ExMap> {
               const Center(
                 child: Icon(
                   Icons.navigation,
-                  size: 75,
+                  size: 65,
                   color: Colors.blue,
                 ),
               ),
               Container(
-                height: 120,
+                height: 80,
                 decoration: const BoxDecoration(color: Colors.white),
-                child: Text('Distance: $kms_left\n Angle: $ang'),
+                child: Text('Distance: $kms_left_str Kms', style: TextStyle(fontSize: 20), ),
               )
             ],
           )
@@ -428,8 +447,58 @@ class _ExMapState extends State<ExMap> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Clipboard.setData(ClipboardData(text: markers_list.toString()));
+        onPressed: () {
+          // await Clipboard.setData(ClipboardData(text: markers_list.toString()));
+          setState(() {
+            if (potholes.length == 0) {
+              potholes = [
+                LatLng(12.919675, 77.651339),
+                LatLng(12.919742, 77.650599),
+                LatLng(12.919699, 77.652136),
+                LatLng(12.919014, 77.651588),
+                LatLng(12.91797, 77.65167),
+                LatLng(12.918991, 77.650647),
+                LatLng(12.919008, 77.650678),
+                LatLng(12.917322, 77.651161),
+                LatLng(12.917334, 77.651341),
+                LatLng(12.916351, 77.651955),
+                LatLng(12.916341, 77.652188),
+                LatLng(12.915857, 77.651745),
+                LatLng(12.91582, 77.651245),
+                LatLng(12.915421, 77.651163),
+                LatLng(12.915776, 77.648965),
+                LatLng(12.915762, 77.649049),
+                LatLng(12.912523, 77.651335),
+                LatLng(12.913278, 77.651294),
+                LatLng(12.911947, 77.649648),
+                LatLng(12.912444, 77.648903),
+                LatLng(12.912549, 77.649017),
+                LatLng(12.911904, 77.648235),
+                LatLng(12.91082, 77.649077),
+                LatLng(12.910885, 77.647908),
+                LatLng(12.91091, 77.647722),
+                LatLng(12.908724, 77.648747),
+                LatLng(12.909335, 77.647244),
+                LatLng(12.909318, 77.647286),
+                LatLng(12.909534, 77.645079),
+                LatLng(12.908443, 77.646741),
+                LatLng(12.908554, 77.645557),
+                LatLng(12.908294, 77.644943),
+                LatLng(12.905859, 77.644845),
+                LatLng(12.906225, 77.643131),
+                LatLng(12.906907, 77.64172),
+                LatLng(12.908805, 77.640902),
+                LatLng(12.907816, 77.640867),
+                LatLng(12.907813, 77.640902),
+                LatLng(12.905179, 77.642418),
+                LatLng(12.905226, 77.64233),
+                LatLng(12.905259, 77.642321),
+                LatLng(12.905459, 77.641417)
+              ];
+            } else {
+              potholes = [];
+            }
+          });
         },
         child: const Icon(
           Icons.copy,
