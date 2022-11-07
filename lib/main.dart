@@ -86,6 +86,28 @@ class _ExMapState extends State<ExMap> {
     return (atan(m) * 180 / pi) + 180.0;
   }
 
+  double _getKms(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+
+  double _getDistance(LatLng pt1) {
+    double lat1 = pt1.latitude;
+    double lon1 = pt1.longitude;
+
+    double kms = 0;
+    for (int i = ambulance_loc_index; i < markers_list2.length; i++) {
+      double lat2 = markers_list2[i].latitude;
+      double lon2 = markers_list2[i].longitude;
+      kms += _getKms(lat1, lon1, lat2, lon2);
+    }
+    return kms;
+  }
+
   void _getAmbPos() {
     ambulance_loc_index = 0;
     List<Marker> x = _getMarkers();
@@ -93,10 +115,25 @@ class _ExMapState extends State<ExMap> {
 
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
-        // _getRotAng();
+        double angle = _getRotAng();
+        ang = angle;
         ambulance_marker = x[i];
-        _mapController.moveAndRotate(
-            ambulance_marker.point, 18.0, _getRotAng());
+        LatLng temp = LatLng(
+            ambulance_marker.point.latitude, ambulance_marker.point.longitude);
+        if (angle >= 0 && angle < 90) {
+          temp.latitude += 0.001247;
+        } else if (angle >= 90 && angle < 180) {
+          temp.longitude += 0.001247;
+        } else if (angle >= 180 && angle < 270) {
+          temp.latitude -= 0.001247;
+        } else if (angle >= 270 && angle < 360) {
+          temp.longitude -= 0.001247;
+        }
+
+        // temp.longitude -= 0.001247;
+        // temp.latitude -= 0.001247;
+        _mapController.moveAndRotate(temp, 18.0, angle);
+        kms_left = _getDistance(ambulance_marker.point);
       });
       i++;
       if (i == x.length) {
@@ -139,6 +176,8 @@ class _ExMapState extends State<ExMap> {
   LatLng plot_center = LatLng(12.912111, 77.646641);
   LatLng user_loc = LatLng(12.920758, 77.651571);
   int ambulance_loc_index = 0;
+  double ang = 0.0;
+  double kms_left = 0;
   Marker ambulance_marker = Marker(
       point: LatLng(0.0, 0.0),
       builder: ((context) => const Icon(
@@ -277,6 +316,14 @@ class _ExMapState extends State<ExMap> {
         title: const Text('Map view'),
         actions: [
           IconButton(
+              onPressed: () {
+                markers_list.add(_mapController.center);
+              },
+              icon: const Icon(
+                Icons.pin,
+                color: Colors.white,
+              )),
+          IconButton(
               onPressed: _cleaRMarkers,
               icon: const Icon(
                 Icons.delete,
@@ -351,6 +398,32 @@ class _ExMapState extends State<ExMap> {
               MarkerLayer(markers: [ambulance_marker]),
             ],
           ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                height: 150,
+                decoration: const BoxDecoration(color: Colors.white),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Center(
+                child: Icon(
+                  Icons.navigation,
+                  size: 75,
+                  color: Colors.blue,
+                ),
+              ),
+              Container(
+                height: 120,
+                decoration: const BoxDecoration(color: Colors.white),
+                child: Text('Distance: $kms_left\n Angle: $ang'),
+              )
+            ],
+          )
           // Container(child: Center(child: Text('Current tap $tap_pos_x, $tap_pos_y')),)
         ],
       ),
