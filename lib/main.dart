@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,14 @@ class ExMap extends StatefulWidget {
 }
 
 class _ExMapState extends State<ExMap> {
+  late final MapController _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
+
   List<LatLng> getPoints(int m2, double x1, double y1, double x2, double y2) {
     // ArrayList<double[]> a = new ArrayList<double[]>();
     List<LatLng> a = [];
@@ -69,13 +78,25 @@ class _ExMapState extends State<ExMap> {
     return markers;
   }
 
+  double _getRotAng() {
+    double m = (markers_list2[ambulance_loc_index + 1].longitude -
+            markers_list2[ambulance_loc_index].longitude) /
+        (markers_list2[ambulance_loc_index + 1].latitude -
+            markers_list2[ambulance_loc_index].latitude);
+    return (atan(m) * 180 / pi) + 180.0;
+  }
+
   void _getAmbPos() {
+    ambulance_loc_index = 0;
     List<Marker> x = _getMarkers();
     int i = 0;
 
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
+        // _getRotAng();
         ambulance_marker = x[i];
+        _mapController.moveAndRotate(
+            ambulance_marker.point, 18.0, _getRotAng());
       });
       i++;
       if (i == x.length) {
@@ -84,7 +105,7 @@ class _ExMapState extends State<ExMap> {
         x.clear();
         x = _getMarkers();
       }
-      if(ambulance_loc_index == markers_list2.length) {
+      if (ambulance_loc_index == markers_list2.length) {
         timer.cancel();
       }
     });
@@ -284,11 +305,11 @@ class _ExMapState extends State<ExMap> {
       body: Stack(
         children: [
           FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
               center: plot_center,
               zoom: 15.3,
               maxZoom: 18.0,
-              // rotation: 180.0,
               keepAlive: true,
               onTap: (tapPosition, point) {
                 setState(() {
