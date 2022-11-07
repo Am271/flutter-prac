@@ -95,8 +95,8 @@ class _ExMapState extends State<ExMap> {
       setState(() {
         // _getRotAng();
         ambulance_marker = x[i];
-        _mapController.moveAndRotate(
-            ambulance_marker.point, 18.0, _getRotAng());
+        // _mapController.moveAndRotate(
+        //     ambulance_marker.point, 18.0, _getRotAng());
       });
       i++;
       if (i == x.length) {
@@ -275,32 +275,32 @@ class _ExMapState extends State<ExMap> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map view'),
-        actions: [
-          IconButton(
-              onPressed: _cleaRMarkers,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              )),
-          IconButton(
-              onPressed: _clearLastMarker,
-              icon: const Icon(
-                Icons.undo,
-                color: Colors.white,
-              )),
-          IconButton(
-            onPressed: (() {
-              setState(() {
-                // ambulance_loc_index++;
-                _getAmbPos();
-              });
-            }),
-            icon: const Icon(
-              Icons.navigation,
-              color: Colors.white,
-            ),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: _cleaRMarkers,
+        //       icon: const Icon(
+        //         Icons.delete,
+        //         color: Colors.white,
+        //       )),
+        //   IconButton(
+        //       onPressed: _clearLastMarker,
+        //       icon: const Icon(
+        //         Icons.undo,
+        //         color: Colors.white,
+        //       )),
+        //   IconButton(
+        //     onPressed: (() {
+        //       setState(() {
+        //         // ambulance_loc_index++;
+        //         _getAmbPos();
+        //       });
+        //     }),
+        //     icon: const Icon(
+        //       Icons.navigation,
+        //       color: Colors.white,
+        //     ),
+        //   )
+        // ],
       ),
       body: Stack(
         children: [
@@ -355,11 +355,12 @@ class _ExMapState extends State<ExMap> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Clipboard.setData(ClipboardData(text: markers_list.toString()));
+        onPressed: () {
+          // await Clipboard.setData(ClipboardData(text: markers_list.toString()));
+          _getAmbPos();
         },
         child: const Icon(
-          Icons.copy,
+          Icons.navigation,
           color: Colors.white,
         ),
       ),
